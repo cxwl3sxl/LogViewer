@@ -14,3 +14,4 @@
 9. 支持调整窗口的透明度
 10. 支持调整显示区域的字体大小
 
+![](https://github.com/cxwl3sxl/LogViewer/blob/master/releases/1.0/%E6%8D%95%E8%8E%B7.PNG)  
