@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="920" UseLayoutRounding="True">
+        Title="Log4Net日志查看" Height="350" Width="920" UseLayoutRounding="True" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="Border" x:Key="BorderStyle">
             <Setter Property="BorderThickness" Value="0"></Setter>
@@ -22,6 +22,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="2" MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown" HorizontalAlignment="Stretch" Background="White">
+                <Image Source="daffy_duck_angry.ico"  Width="20" Height="20" Margin="0 0 5 0"></Image>
                 <Label>程序名称：</Label>
                 <ComboBox ItemsSource="{Binding ApplicationNames}" SelectedItem="{Binding CurrentApp}" MaxWidth="100"></ComboBox>
                 <Label>线程ID：</Label>
@@ -218,7 +219,7 @@
                     </Style>
                 </Button.Style>
             </Button>
-            
+
             <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 2 0" Click="ShutDown_OnClick" ToolTip="关闭">
                 <Button.Style>
                     <Style TargetType="Button">
@@ -249,7 +250,7 @@
             </Button>
 
 
-            <RichTextBox Name="RichTextBoxLogs" Grid.Row="1" Margin="2 0 2 2" BorderThickness="1" BorderBrush="DodgerBlue" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+            <RichTextBox Name="RichTextBoxLogs" FontSize="12" Grid.Row="1" Margin="2 0 2 2" BorderThickness="1" BorderBrush="DodgerBlue" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
                 <FlowDocument>
                     <FlowDocument.Resources>
                         <Style TargetType="Paragraph">
@@ -266,7 +267,9 @@
                 <Label Foreground="DodgerBlue">INFO</Label>
                 <Label Foreground="DarkGray">DEBUG</Label>
                 <Label>窗体透明度：</Label>
-                <Slider Minimum="0.8" Maximum="1" Value="{Binding Opacity ,ElementName=MainWindowForm}" Width="150"></Slider>
+                <Slider Style="{DynamicResource SliderStyle1}" Minimum="0.8" Maximum="1" VerticalAlignment="Center" Value="{Binding Opacity ,ElementName=MainWindowForm}" Width="150"></Slider>
+                <Label>字体大小：</Label>
+                <Slider Style="{DynamicResource SliderStyle1}" Minimum="12" Maximum="20"  VerticalAlignment="Center" Value="{Binding FontSize ,ElementName=RichTextBoxLogs}" Width="150"></Slider>
             </StackPanel>
             <Image Grid.Row="2" Source="Images/resize-bottom-right.png" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" 
                    MouseMove="ResizePressed" MouseDown="ResizePressed"></Image>
