@@ -180,7 +180,8 @@ namespace LogViewer
 
         private void UIElement_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DragMove();
+            if (e.ButtonState == MouseButtonState.Pressed)
+                DragMove();
         }
 
         private HwndSource _HwndSource;
@@ -209,6 +210,7 @@ namespace LogViewer
             WindowState = WindowState.Normal;
             ButtonMax.Visibility = Visibility.Visible;
             ButtonRestore.Visibility = Visibility.Collapsed;
+            BorderThickness = new Thickness(24);
         }
 
         private void ButtonMin_OnClick(object sender, RoutedEventArgs e)
@@ -218,6 +220,7 @@ namespace LogViewer
 
         private void ButtonMax_OnClick(object sender, RoutedEventArgs e)
         {
+            BorderThickness = new Thickness(5);
             WindowState = WindowState.Maximized;
             ButtonMax.Visibility = Visibility.Collapsed;
             ButtonRestore.Visibility = Visibility.Visible;
