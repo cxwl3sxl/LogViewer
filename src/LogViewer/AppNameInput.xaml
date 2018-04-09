@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
-        Title="请输入程序名称" Height="100" Width="200" ResizeMode="NoResize">
+        Title="请输入程序名称" WindowStartupLocation="CenterOwner" Height="100" Width="200" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>

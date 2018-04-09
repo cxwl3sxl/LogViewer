@@ -131,22 +131,31 @@ namespace LogViewer
 
         private void CopySetting_OnClick(object sender, RoutedEventArgs e)
         {
+            var text = "";
             try
             {
-                var app = new AppNameInput();
+                var app = new AppNameInput { Owner = this };
                 var dialogReasult = app.ShowDialog();
                 if (dialogReasult.HasValue && dialogReasult.Value)
                 {
-                    var udpAppender = Properties.Resources.UdpAppender
+                    text = Properties.Resources.UdpAppender
                         .Replace("#PORT#", _logViewModel.Port.ToString())
                         .Replace("#APPNAME#", app.TextBoxAppName.Text.Replace("\"", "").Replace("<", "").Replace(">", "").Replace("&", ""));
-                    Clipboard.SetText(udpAppender);
+                    Clipboard.SetDataObject(text);
                     MessageBox.Show("复制成功，请将内容粘贴到目标程序的配置文件中！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("复制失败，请重试！", "错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"复制失败，请手动复制！\n{ex}", "错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+                var copy = new CopyContent
+                {
+                    Owner = this,
+                    TextBoxContent = { Text = text }
+                };
+                copy.TextBoxContent.SelectionStart = 0;
+                copy.TextBoxContent.SelectAll();
+                copy.ShowDialog();
             }
         }
 

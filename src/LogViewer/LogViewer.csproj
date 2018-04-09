@@ -58,9 +58,16 @@
     <Compile Include="AppNameInput.xaml.cs">
       <DependentUpon>AppNameInput.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CopyContent.xaml.cs">
+      <DependentUpon>CopyContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LogEntity.cs" />
     <Compile Include="UdpServer.cs" />
     <Page Include="AppNameInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CopyContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
