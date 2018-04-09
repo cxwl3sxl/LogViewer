@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -53,7 +54,7 @@ namespace LogViewer
             try
             {
                 var xml = new XmlDocument();
-                xml.LoadXml(obj);
+                xml.LoadXml(HttpUtility.HtmlDecode(obj));
                 var log = xml.SelectSingleNode("log");
                 if (log == null) return;
                 var logObj = new LogEntity();
