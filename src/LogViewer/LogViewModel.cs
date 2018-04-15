@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using LogViewer.Annotations;
 
@@ -9,23 +10,74 @@ namespace LogViewer
         public const string All = "=ALL=";
         public LogViewModel()
         {
-            ApplicationNames = new ObservableCollection<string>();
-            ApplicationNames.Add(All);
-            ThreadIds = new ObservableCollection<string>();
-            ThreadIds.Add(All);
+            ApplicationNames = new ObservableCollection<string> { All };
+            ThreadIds = new ObservableCollection<string> { All };
             Loggers = new ObservableCollection<string>();
+            LoggerLevels = new ObservableCollection<string>
+            {
+                All,
+                "FATAL",
+                "ERROR",
+                "WARN",
+                "INFO",
+                "DEBUG"
+            };
             Loggers.Add(All);
             CurrentApp = All;
             CurrentLogger = All;
             CurrentThread = All;
+            CurrentLevel = All;
         }
-        public ObservableCollection<string> ApplicationNames { get; private set; }
-        public ObservableCollection<string> ThreadIds { get; private set; }
-        public ObservableCollection<string> Loggers { get; private set; }
+        public ObservableCollection<string> ApplicationNames { get; }
+        public ObservableCollection<string> ThreadIds { get; }
+        public ObservableCollection<string> Loggers { get; }
+        public ObservableCollection<string> LoggerLevels { get; }
 
-        public string CurrentApp { get; set; }
-        public string CurrentThread { get; set; }
-        public string CurrentLogger { get; set; }
+        public event Action FilterChanged;
+
+        public string CurrentApp
+        {
+            get => _currentApp;
+            set
+            {
+                var changed = _currentApp != value;
+                _currentApp = value;
+                if (changed) FilterChanged?.Invoke();
+            }
+        }
+
+        public string CurrentThread
+        {
+            get => _currentThread;
+            set
+            {
+                var changed = _currentThread != value;
+                _currentThread = value;
+                if (changed) FilterChanged?.Invoke();
+            }
+        }
+
+        public string CurrentLogger
+        {
+            get => _currentLogger;
+            set
+            {
+                var changed = _currentLogger != value;
+                _currentLogger = value;
+                if (changed) FilterChanged?.Invoke();
+            }
+        }
+
+        public string CurrentLevel
+        {
+            get => _currentLevel;
+            set
+            {
+                var changed = _currentLevel != value;
+                _currentLevel = value;
+                if (changed) FilterChanged?.Invoke();
+            }
+        }
 
         private bool _isAutoScrollToEnd = true;
         public bool IsAutoScrollToEnd
@@ -51,6 +103,11 @@ namespace LogViewer
         }
 
         private int _port = 7171;
+        private string _currentApp;
+        private string _currentThread;
+        private string _currentLogger;
+        private string _currentLevel;
+
         public int Port
         {
             get => _port;

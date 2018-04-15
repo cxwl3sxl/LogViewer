@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Web;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 
 namespace LogViewer
@@ -25,6 +19,7 @@ namespace LogViewer
     {
         readonly LogViewModel _logViewModel = new LogViewModel();
         readonly UdpServer _udpServer = new UdpServer();
+        readonly List<LogEntity> _allLogs = new List<LogEntity>();
         public MainWindow()
         {
             InitializeComponent();
@@ -33,9 +28,24 @@ namespace LogViewer
                 this._HwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             };
             DataContext = _logViewModel;
+            _logViewModel.FilterChanged += _logViewModel_FilterChanged;
             _udpServer.LogReceived += _udpServer_LogReceived;
             _udpServer.ServerStarted += _udpServer_ServerStarted;
             _udpServer.ServerStoped += _udpServer_ServerStoped;
+        }
+
+        private void _logViewModel_FilterChanged()
+        {
+            var result = _allLogs.Where(d =>
+                (d.App == _logViewModel.CurrentApp || _logViewModel.CurrentApp == LogViewModel.All) &&
+                (d.Level == _logViewModel.CurrentLevel || _logViewModel.CurrentLevel == LogViewModel.All) &&
+                (d.Logger == _logViewModel.CurrentLogger || _logViewModel.CurrentLogger == LogViewModel.All) &&
+                (d.Thread == _logViewModel.CurrentThread || _logViewModel.CurrentThread == LogViewModel.All));
+            RichTextBoxLogs.Document.Blocks.Clear();
+            foreach (var entity in result)
+            {
+                ShowLogItem(entity);
+            }
         }
 
         private void _udpServer_ServerStoped()
@@ -82,6 +92,7 @@ namespace LogViewer
         void ShowLog(LogEntity log)
         {
             if (log == null) return;
+            _allLogs.Add(log);
 
             if (!_logViewModel.ApplicationNames.Contains(log.App))
             {
@@ -98,7 +109,12 @@ namespace LogViewer
             if (_logViewModel.CurrentApp != LogViewModel.All && _logViewModel.CurrentApp != log.App) return;
             if (_logViewModel.CurrentLogger != LogViewModel.All && _logViewModel.CurrentLogger != log.Logger) return;
             if (_logViewModel.CurrentThread != LogViewModel.All && _logViewModel.CurrentThread != log.Thread) return;
+            if (_logViewModel.CurrentLevel != LogViewModel.All && _logViewModel.CurrentLevel != log.Level) return;
+            ShowLogItem(log);
+        }
 
+        void ShowLogItem(LogEntity log)
+        {
             var line = new Run($"[{log.Time}] [{log.Logger}] [{log.Thread}] {log.Content}");
             switch (log.Level)
             {
@@ -120,6 +136,7 @@ namespace LogViewer
                     break;
             }
             RichTextBoxLogs.Document.Blocks.Add(new Paragraph(line));
+
             if (_logViewModel.IsAutoScrollToEnd)
                 RichTextBoxLogs.ScrollToEnd();
         }
@@ -234,6 +251,11 @@ namespace LogViewer
             WindowState = WindowState.Maximized;
             ButtonMax.Visibility = Visibility.Collapsed;
             ButtonRestore.Visibility = Visibility.Visible;
+        }
+
+        private void About_OnClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Log4Net日志收集器\nhttps://github.com/cxwl3sxl/LogViewer", "关于");
         }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="920" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen">
+        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="Border" x:Key="BorderStyle">
             <Setter Property="BorderThickness" Value="0"></Setter>
@@ -32,6 +32,8 @@
                 <ComboBox ItemsSource="{Binding ThreadIds}" SelectedItem="{Binding CurrentThread}"  MaxWidth="100"></ComboBox>
                 <Label>日志名称：</Label>
                 <ComboBox ItemsSource="{Binding Loggers}" SelectedItem="{Binding CurrentLogger}"  MaxWidth="100"></ComboBox>
+                <Label>日志级别：</Label>
+                <ComboBox ItemsSource="{Binding LoggerLevels}" SelectedItem="{Binding CurrentLevel}"  MaxWidth="100"></ComboBox>
                 <Button ToolTip="清除所有日志" Margin="10 0 2 0" Click="CleanLogs_OnClick">
                     <Button.Template>
                         <ControlTemplate>
@@ -166,6 +168,34 @@
                 </Button.Style>
             </Button>
 
+            <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 62 0" ToolTip="关于" Click="About_OnClick">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border Style="{StaticResource BorderStyle}">
+                                        <Image Source="Images/about.png"></Image>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
+                                                <Image Source="Images/about.png"></Image>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button Grid.Row="0" Width="20" Height="20" Name="ButtonRestore" HorizontalAlignment="Right" Visibility="Collapsed" Margin="0 0 22 0"  ToolTip="还原" Click="ButtonRestore_OnClick">
                 <Button.Style>
                     <Style TargetType="Button">
