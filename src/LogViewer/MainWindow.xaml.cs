@@ -143,8 +143,12 @@ namespace LogViewer
 
         private void CleanLogs_OnClick(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("确定要清空所有日志么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show("确定要清空所有日志么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                MessageBoxResult.Yes)
+            {
                 RichTextBoxLogs.Document.Blocks.Clear();
+                _allLogs.Clear();
+            }
         }
 
         private void CopySetting_OnClick(object sender, RoutedEventArgs e)
