@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen">
+        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen" KeyDown="Find_OnKeyDown">
     <Window.Resources>
         <Style TargetType="Border" x:Key="BorderStyle">
             <Setter Property="BorderThickness" Value="0"></Setter>
@@ -306,6 +306,96 @@
             </StackPanel>
             <Image Grid.Row="2" Source="Images/resize-bottom-right.png" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" 
                    MouseMove="ResizePressed" MouseDown="ResizePressed"></Image>
+            <Border Grid.Row="2" Name="BorderFindBox" Visibility="Collapsed" BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Right" Background="White" VerticalAlignment="Top" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Width="200" Name="TextBoxKeyWords" KeyDown="TextBoxKeyWords_OnKeyDown" HorizontalAlignment="Stretch"  VerticalContentAlignment="Center" BorderThickness="0"></TextBox>
+                    <Label Name="LabelResultCount" MinWidth="60"></Label>
+                    <Button Click="FindPre_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource BorderStyle}">
+                                                <Image Width="24" Source="Images/find-pre.png"></Image>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
+                                                        <Image Width="24" Source="Images/find-pre.png"></Image>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Click="FindNext_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource BorderStyle}">
+                                                <Image Width="24" Source="Images/find-next.png"></Image>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
+                                                        <Image Width="24" Source="Images/find-next.png"></Image>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Click="FindClose_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource BorderStyle}">
+                                                <Image Width="24" Source="Images/find-close.png"></Image>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
+                                                        <Image Width="24" Source="Images/find-close.png"></Image>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
         </Grid>
     </Border>
 </Window>

@@ -63,6 +63,7 @@
       <DependentUpon>CopyContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="LogEntity.cs" />
+    <Compile Include="MainWindow.cs" />
     <Compile Include="UdpServer.cs" />
     <Page Include="AppNameInput.xaml">
       <SubType>Designer</SubType>
@@ -154,6 +155,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\about.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dialog_cancel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\find-next.png" />
+    <Resource Include="Images\find-pre.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\find-close.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

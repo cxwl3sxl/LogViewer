@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -260,6 +263,113 @@ namespace LogViewer
         private void About_OnClick(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Log4Net日志收集器\nhttps://github.com/cxwl3sxl/LogViewer", "关于");
+        }
+
+        private void FindClose_OnClick(object sender, RoutedEventArgs e)
+        {
+            BorderFindBox.Visibility = Visibility.Collapsed;
+            foreach (var range in _findResult)
+            {
+                range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.White));
+            }
+            _findResult.Clear();
+            _currentIndex = 0;
+        }
+
+        private void Find_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.F)
+            {
+                BorderFindBox.Visibility = Visibility.Visible;
+                TextBoxKeyWords.Text = "";
+                TextBoxKeyWords.Focus();
+            }
+        }
+
+        readonly List<TextRange> _findResult = new List<TextRange>();
+        private int _currentIndex = 0;
+        private void TextBoxKeyWords_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                foreach (var range in _findResult)
+                {
+                    range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.White));
+                }
+                _findResult.Clear();
+                _currentIndex = 0;
+                var result = FindWordFromPosition(TextBoxKeyWords.Text);
+                LabelResultCount.Content = $"{_currentIndex}/{result.Count}";
+                _findResult.AddRange(result);
+                _logViewModel.IsAutoScrollToEnd = false;
+                if (_findResult.Count > 0)
+                    _findResult[0].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
+            }
+        }
+
+        List<TextRange> FindWordFromPosition(string keyword)
+        {
+            var regex = new Regex(keyword);
+            var result = new List<TextRange>();
+            var position = RichTextBoxLogs.Document.ContentStart;
+            while (position != null)
+            {
+                if (position.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+                {
+                    //拿出Run的Text        
+                    var text = position.GetTextInRun(LogicalDirection.Forward);
+                    //可能包含多个keyword,做遍历查找           
+                    var all = regex.Matches(text);
+                    foreach (Match match in all)
+                    {
+                        TextPointer start = position.GetPositionAtOffset(match.Index);
+                        TextPointer end = start?.GetPositionAtOffset(match.Length);
+                        var current = new TextRange(start, end);
+                        Trace.WriteLine(start.GetHashCode() + " ~ " + end.GetHashCode() + " " + text);
+                        result.Add(current);
+                        current.ApplyPropertyValue(TextElement.BackgroundProperty,
+                            new SolidColorBrush(Colors.GreenYellow));
+                    }
+                }
+                //文字指针向前偏移   
+                position = position.GetNextContextPosition(LogicalDirection.Forward);
+            }
+            return result;
+        }
+
+        private void FindPre_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_findResult.Count == 0) return;
+            _currentIndex--;
+            if (_currentIndex < 0)
+            {
+                _currentIndex = _findResult.Count - 1;
+            }
+            FocusResult(_currentIndex, -1);
+        }
+
+        private void FindNext_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_findResult.Count == 0) return;
+            _currentIndex++;
+            if (_currentIndex >= _findResult.Count)
+            {
+                _currentIndex = 0;
+            }
+            FocusResult(_currentIndex, +1);
+        }
+
+        void FocusResult(int index, int action)
+        {
+            LabelResultCount.Content = $"{index}/{_findResult.Count}";
+            var pre = index - action;
+            if (pre < 0) pre = _findResult.Count - 1;
+            if (pre >= _findResult.Count) pre = 0;
+            _findResult[pre].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.GreenYellow));
+            if (index < 0) index = _findResult.Count - 1;
+            if (index >= _findResult.Count) index = 0;
+            _findResult[index].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
+            _findResult[index].Start?.Paragraph?.BringIntoView();
         }
     }
 }
