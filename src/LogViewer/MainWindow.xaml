@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen" KeyDown="Find_OnKeyDown">
+        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen" KeyDown="Find_OnKeyDown" Loaded="MainWindow_OnLoaded">
     <Window.Resources>
         <Style TargetType="Border" x:Key="BorderStyle">
             <Setter Property="BorderThickness" Value="0"></Setter>
@@ -298,7 +297,7 @@
                 <Label Foreground="Red">ERROR</Label>
                 <Label Foreground="Orange">WARN</Label>
                 <Label Foreground="DodgerBlue">INFO</Label>
-                <Label Foreground="DarkGray">DEBUG</Label>
+                <Label Foreground="Gray">DEBUG</Label>
                 <Label>窗体透明度：</Label>
                 <Slider Style="{DynamicResource SliderStyle1}" Minimum="0.2" Maximum="1" VerticalAlignment="Center" Value="{Binding Opacity ,ElementName=MainWindowForm}" Width="150"></Slider>
                 <Label>字体大小：</Label>

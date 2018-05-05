@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -135,7 +133,7 @@ namespace LogViewer
                     line.Foreground = new SolidColorBrush(Colors.DodgerBlue);
                     break;
                 case "DEBUG":
-                    line.Foreground = new SolidColorBrush(Colors.DarkGray);
+                    line.Foreground = new SolidColorBrush(Colors.Gray);
                     break;
             }
             RichTextBoxLogs.Document.Blocks.Add(new Paragraph(line));
@@ -273,6 +271,7 @@ namespace LogViewer
                 range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.White));
             }
             _findResult.Clear();
+            _logViewModel.IsAutoScrollToEnd = true;
             _currentIndex = 0;
         }
 
@@ -282,6 +281,7 @@ namespace LogViewer
             {
                 BorderFindBox.Visibility = Visibility.Visible;
                 TextBoxKeyWords.Text = "";
+                LabelResultCount.Content = $"0/0";
                 TextBoxKeyWords.Focus();
             }
         }
@@ -298,6 +298,7 @@ namespace LogViewer
                 }
                 _findResult.Clear();
                 _currentIndex = 0;
+                if (string.IsNullOrWhiteSpace(TextBoxKeyWords.Text)) return;
                 var result = FindWordFromPosition(TextBoxKeyWords.Text);
                 LabelResultCount.Content = $"{_currentIndex}/{result.Count}";
                 _findResult.AddRange(result);
@@ -325,7 +326,6 @@ namespace LogViewer
                         TextPointer start = position.GetPositionAtOffset(match.Index);
                         TextPointer end = start?.GetPositionAtOffset(match.Length);
                         var current = new TextRange(start, end);
-                        Trace.WriteLine(start.GetHashCode() + " ~ " + end.GetHashCode() + " " + text);
                         result.Add(current);
                         current.ApplyPropertyValue(TextElement.BackgroundProperty,
                             new SolidColorBrush(Colors.GreenYellow));
@@ -370,6 +370,12 @@ namespace LogViewer
             if (index >= _findResult.Count) index = 0;
             _findResult[index].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
             _findResult[index].Start?.Paragraph?.BringIntoView();
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _logViewModel.IsWorking = true;
+            StartOrStop_OnClick(null, null);
         }
     }
 }
