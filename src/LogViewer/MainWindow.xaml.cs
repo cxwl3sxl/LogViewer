@@ -107,6 +107,25 @@ namespace LogViewer
             {
                 _logViewModel.Loggers.Add(log.Logger);
             }
+            _logViewModel.Total++;
+            switch (log.Level)
+            {
+                case "FATAL":
+                    _logViewModel.Fatal++;
+                    break;
+                case "ERROR":
+                    _logViewModel.Error++;
+                    break;
+                case "WARN":
+                    _logViewModel.Warn++;
+                    break;
+                case "INFO":
+                    _logViewModel.Info++;
+                    break;
+                case "DEBUG":
+                    _logViewModel.Debug++;
+                    break;
+            }
             if (_logViewModel.CurrentApp != LogViewModel.All && _logViewModel.CurrentApp != log.App) return;
             if (_logViewModel.CurrentLogger != LogViewModel.All && _logViewModel.CurrentLogger != log.Logger) return;
             if (_logViewModel.CurrentThread != LogViewModel.All && _logViewModel.CurrentThread != log.Thread) return;
@@ -149,6 +168,12 @@ namespace LogViewer
             {
                 RichTextBoxLogs.Document.Blocks.Clear();
                 _allLogs.Clear();
+                _logViewModel.Total = 0;
+                _logViewModel.Debug = 0;
+                _logViewModel.Info = 0;
+                _logViewModel.Warn = 0;
+                _logViewModel.Error = 0;
+                _logViewModel.Fatal = 0;
             }
         }
 

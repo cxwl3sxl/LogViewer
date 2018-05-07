@@ -107,6 +107,72 @@ namespace LogViewer
         private string _currentThread;
         private string _currentLogger;
         private string _currentLevel;
+        private int _fatal;
+        private int _error;
+        private int _warn;
+        private int _info;
+        private int _debug;
+        private int _total;
+
+        public int Total
+        {
+            get => _total;
+            set
+            {
+                _total = value;
+                OnPropertyChanged(nameof(Total));
+            }
+        }
+
+        public int Fatal
+        {
+            get => _fatal;
+            set
+            {
+                _fatal = value;
+                OnPropertyChanged(nameof(Fatal));
+            }
+        }
+
+        public int Error
+        {
+            get => _error;
+            set
+            {
+                _error = value;
+                OnPropertyChanged(nameof(Error));
+            }
+        }
+
+        public int Warn
+        {
+            get => _warn;
+            set
+            {
+                _warn = value;
+                OnPropertyChanged(nameof(Warn));
+            }
+        }
+
+        public int Info
+        {
+            get => _info;
+            set
+            {
+                _info = value;
+                OnPropertyChanged(nameof(Info));
+            }
+        }
+
+        public int Debug
+        {
+            get => _debug;
+            set
+            {
+                _debug = value;
+                OnPropertyChanged(nameof(Debug));
+            }
+        }
 
         public int Port
         {

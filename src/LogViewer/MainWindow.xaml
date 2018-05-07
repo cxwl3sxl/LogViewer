@@ -293,11 +293,12 @@
                 </FlowDocument>
             </RichTextBox>
             <StackPanel Grid.Row="2" Orientation="Horizontal" Background="White" Margin="2">
-                <Label Foreground="Red" Background="Black">FATAL</Label>
-                <Label Foreground="Red">ERROR</Label>
-                <Label Foreground="Orange">WARN</Label>
-                <Label Foreground="DodgerBlue">INFO</Label>
-                <Label Foreground="Gray">DEBUG</Label>
+                <Label Foreground="Red" Background="Black" Content="{Binding Fatal}" ContentStringFormat="FATAL:{0}"></Label>
+                <Label Foreground="Red" Content="{Binding Error}" ContentStringFormat="ERROR:{0}"></Label>
+                <Label Foreground="Orange" Content="{Binding Warn}" ContentStringFormat="WARN:{0}"></Label>
+                <Label Foreground="DodgerBlue" Content="{Binding Info}" ContentStringFormat="INFO:{0}"></Label>
+                <Label Foreground="Gray" Content="{Binding Debug}" ContentStringFormat="DEBUG:{0}"></Label>
+                <Label Content="{Binding Total}" ContentStringFormat="TOTAL:{0}"></Label>
                 <Label>窗体透明度：</Label>
                 <Slider Style="{DynamicResource SliderStyle1}" Minimum="0.2" Maximum="1" VerticalAlignment="Center" Value="{Binding Opacity ,ElementName=MainWindowForm}" Width="150"></Slider>
                 <Label>字体大小：</Label>
