@@ -317,20 +317,25 @@ namespace LogViewer
         {
             if (e.Key == Key.Enter)
             {
-                foreach (var range in _findResult)
-                {
-                    range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.White));
-                }
-                _findResult.Clear();
-                _currentIndex = 0;
-                if (string.IsNullOrWhiteSpace(TextBoxKeyWords.Text)) return;
-                var result = FindWordFromPosition(TextBoxKeyWords.Text);
-                LabelResultCount.Content = $"{_currentIndex}/{result.Count}";
-                _findResult.AddRange(result);
-                _logViewModel.IsAutoScrollToEnd = false;
-                if (_findResult.Count > 0)
-                    _findResult[0].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
+                DoSearch();
             }
+        }
+
+        void DoSearch()
+        {
+            foreach (var range in _findResult)
+            {
+                range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.White));
+            }
+            _findResult.Clear();
+            _currentIndex = 0;
+            if (string.IsNullOrWhiteSpace(TextBoxKeyWords.Text)) return;
+            var result = FindWordFromPosition(TextBoxKeyWords.Text);
+            LabelResultCount.Content = $"{_currentIndex}/{result.Count}";
+            _findResult.AddRange(result);
+            _logViewModel.IsAutoScrollToEnd = false;
+            if (_findResult.Count > 0)
+                _findResult[0].ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
         }
 
         List<TextRange> FindWordFromPosition(string keyword)
@@ -401,6 +406,11 @@ namespace LogViewer
         {
             _logViewModel.IsWorking = true;
             StartOrStop_OnClick(null, null);
+        }
+
+        private void DoSearch_OnClick(object sender, RoutedEventArgs e)
+        {
+            DoSearch();
         }
     }
 }

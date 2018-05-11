@@ -166,5 +166,8 @@
   <ItemGroup>
     <Resource Include="Images\find-close.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\search.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
