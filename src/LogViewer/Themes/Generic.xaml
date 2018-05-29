@@ -56,5 +56,26 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type local:LinkButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:LinkButton}">
+                    <Label x:Name="Label" 
+                           Foreground="{TemplateBinding Foreground}" 
+                           Content="{TemplateBinding Content}" 
+                           ToolTip="{TemplateBinding ToolTip}"></Label>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter 
+                                Property="Foreground"  
+                                TargetName="Label" 
+                                Value="{Binding Path=HighlightBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
 

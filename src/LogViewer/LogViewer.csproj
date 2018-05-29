@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="HighLightImageButton.cs" />
     <Compile Include="ImageCheckBox.cs" />
+    <Compile Include="LinkButton.cs" />
     <Compile Include="LogEntity.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="UdpServer.cs" />

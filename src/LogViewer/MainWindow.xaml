@@ -60,7 +60,7 @@
                     ImageWidth="20"
                     UnCheckedImage="Images/Removefixed.png"
                     UnCheckedToolTip="启动自动滚动"/>
-                
+
                 <local:ImageCheckBox
                     IsChecked="{Binding Topmost, ElementName=MainWindowForm}" 
                     Margin="2 0"
@@ -80,7 +80,7 @@
                     ImageWidth="20"
                     BorderStyle="{StaticResource BorderStyle}" 
                     HighlightBrush="LightSkyBlue"/>
-                
+
                 <Label>服务端口：</Label>
                 <TextBox Text="{Binding Port}" Width="50" IsEnabled="{Binding CanChangePort}" VerticalContentAlignment="Center" Margin="0 2"></TextBox>
 
@@ -98,8 +98,19 @@
 
             <local:HighLightImageButton 
                 Grid.Row="0" 
+                ImageWidth="20"
+                HorizontalAlignment="Right" 
+                Margin="0 0 64 0"
+                ToolTip="关于"
+                Click="About_OnClick"
+                ImageSource="Images/about.png"
+                HighlightImage="Images/about.png"
+                BorderStyle="{StaticResource BorderStyle}" 
+                HighlightBrush="LightSkyBlue"></local:HighLightImageButton>
+            <local:HighLightImageButton 
+                Grid.Row="0" 
                 HorizontalAlignment="Right"
-                Margin="0 0 42 0" 
+                Margin="0 0 44 0" 
                 ToolTip="最小化" 
                 ImageWidth="20"
                 Click="ButtonMin_OnClick"
@@ -107,26 +118,13 @@
                 HighlightImage="Images/minus.png"
                 BorderStyle="{StaticResource BorderStyle}" 
                 HighlightBrush="LightSkyBlue"/>
-
-            <local:HighLightImageButton 
-                Grid.Row="0" 
-                ImageWidth="20"
-                HorizontalAlignment="Right" 
-                Margin="0 0 62 0"
-                ToolTip="关于"
-                Click="About_OnClick"
-                ImageSource="Images/about.png"
-                HighlightImage="Images/about.png"
-                BorderStyle="{StaticResource BorderStyle}" 
-                HighlightBrush="LightSkyBlue"></local:HighLightImageButton>
-
             <local:HighLightImageButton 
                 Grid.Row="0" 
                 ImageWidth="20"
                 x:Name="ButtonRestore" 
                 HorizontalAlignment="Right" 
                 Visibility="Collapsed" 
-                Margin="0 0 22 0"  
+                Margin="0 0 24 0"  
                 ToolTip="还原" 
                 Click="ButtonRestore_OnClick"
                 ImageSource="Images/restore.png"
@@ -144,7 +142,7 @@
                 x:Name="ButtonMax" 
                 Click="ButtonMax_OnClick"
                 HorizontalAlignment="Right"
-                Margin="0 0 22 0"
+                Margin="0 0 24 0"
                 ToolTip="最大化"></local:HighLightImageButton>
 
             <local:HighLightImageButton
@@ -176,6 +174,14 @@
                 <Label Foreground="DodgerBlue" Content="{Binding Info}" ContentStringFormat="INFO:{0}"/>
                 <Label Foreground="Gray" Content="{Binding Debug}" ContentStringFormat="DEBUG:{0}"/>
                 <Label Content="{Binding Total}" ContentStringFormat="TOTAL:{0}"/>
+
+                <Label Width="10"></Label>
+
+                <local:LinkButton Content="首页" Click="FirstPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Content="上一页" Click="PrePageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Content="下一页" Click="NextPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Content="末页" Click="LastPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+
                 <Label>透明度：</Label>
                 <Slider Style="{DynamicResource SliderStyle1}" 
                         Minimum="0.2" 

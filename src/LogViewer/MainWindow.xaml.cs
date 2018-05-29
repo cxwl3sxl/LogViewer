@@ -18,7 +18,8 @@ namespace LogViewer
     /// </summary>
     public partial class MainWindow
     {
-        private readonly int MaxLinePrePage = 2000;
+        private readonly int MaxLinePrePage = 1000;
+        private int _lastLogId;
         readonly LogViewModel _logViewModel = new LogViewModel();
         readonly UdpServer _udpServer = new UdpServer();
         readonly List<LogEntity> _allLogs = new List<LogEntity>();
@@ -132,10 +133,19 @@ namespace LogViewer
             if (_logViewModel.CurrentLogger != LogViewModel.All && _logViewModel.CurrentLogger != log.Logger) return;
             if (_logViewModel.CurrentThread != LogViewModel.All && _logViewModel.CurrentThread != log.Thread) return;
             if (_logViewModel.CurrentLevel != LogViewModel.All && _logViewModel.CurrentLevel != log.Level) return;
+
+            if (_lastLogId != 0 && log.LogId > _lastLogId) return;
             ShowLogItem(log);
         }
 
         void ShowLogItem(LogEntity log)
+        {
+            AppendContent(GetParagraphForLog(log));
+            if (_logViewModel.IsAutoScrollToEnd)
+                RichTextBoxLogs.ScrollToEnd();
+        }
+
+        Paragraph GetParagraphForLog(LogEntity log)
         {
             var line = new Run($"[{log.Time}] [{log.Logger}] [{log.Thread}] {log.Content}");
             switch (log.Level)
@@ -157,10 +167,7 @@ namespace LogViewer
                     line.Foreground = new SolidColorBrush(Colors.Gray);
                     break;
             }
-            AppendContent(new Paragraph(line) { Tag = line });
-
-            if (_logViewModel.IsAutoScrollToEnd)
-                RichTextBoxLogs.ScrollToEnd();
+            return new Paragraph(line);
         }
 
         private void AppendContent(Paragraph paragraph)
@@ -424,6 +431,50 @@ namespace LogViewer
         private void DoSearch_OnClick(object sender, RoutedEventArgs e)
         {
             DoSearch();
+        }
+
+        private void FirstPageLog_OnClick(object sender, RoutedEventArgs e)
+        {
+            _lastLogId = MaxLinePrePage;
+            ReLoadLogs();
+        }
+
+        private void PrePageLog_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_lastLogId == 0)
+            {
+                _lastLogId = _allLogs.LastOrDefault()?.LogId ?? 0;
+                ReLoadLogs();
+            }
+            else if (_lastLogId > MaxLinePrePage)
+            {
+                _lastLogId -= MaxLinePrePage;
+                ReLoadLogs();
+            }
+        }
+
+        private void NextPageLog_OnClick(object sender, RoutedEventArgs e)
+        {
+            _lastLogId += MaxLinePrePage;
+            if (_lastLogId >= _allLogs.Count) _lastLogId = 0;
+            ReLoadLogs();
+        }
+
+        private void LastPageLog_OnClick(object sender, RoutedEventArgs e)
+        {
+            _lastLogId = 0;
+            ReLoadLogs();
+        }
+
+        void ReLoadLogs()
+        {
+            if (_lastLogId < MaxLinePrePage || _allLogs.Count < MaxLinePrePage) return;
+            var logs = _lastLogId == 0 ? _allLogs.GetRange(_allLogs.Count - MaxLinePrePage, MaxLinePrePage) : _allLogs.Skip(_lastLogId - MaxLinePrePage).Take(MaxLinePrePage);
+            RichTextBoxLogs.Document.Blocks.Clear();
+            foreach (var log in logs)
+            {
+                RichTextBoxLogs.Document.Blocks.Add(GetParagraphForLog(log));
+            }
         }
     }
 }
