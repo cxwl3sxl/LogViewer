@@ -16,17 +16,18 @@ namespace LogViewer
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
+        private readonly int MaxLinePrePage = 2000;
         readonly LogViewModel _logViewModel = new LogViewModel();
         readonly UdpServer _udpServer = new UdpServer();
         readonly List<LogEntity> _allLogs = new List<LogEntity>();
         public MainWindow()
         {
             InitializeComponent();
-            this.SourceInitialized += delegate (object sender, EventArgs e)//执行拖拽
+            SourceInitialized += delegate (object sender, EventArgs e)//执行拖拽
             {
-                this._HwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
+                _hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             };
             DataContext = _logViewModel;
             _logViewModel.FilterChanged += _logViewModel_FilterChanged;
@@ -62,6 +63,7 @@ namespace LogViewer
         private void _udpServer_LogReceived(string obj)
         {
             if (!_logViewModel.IsWorking) return;
+            if (string.IsNullOrWhiteSpace(obj)) return;
             try
             {
                 var xml = new XmlDocument();
@@ -79,13 +81,13 @@ namespace LogViewer
             }
             catch
             {
-
+                // ignored
             }
         }
 
         void ShowLog(string log)
         {
-            RichTextBoxLogs.Document.Blocks.Add(new Paragraph(new Run(log)));
+            AppendContent(new Paragraph(new Run(log)));
             if (_logViewModel.IsAutoScrollToEnd)
                 RichTextBoxLogs.ScrollToEnd();
         }
@@ -155,10 +157,21 @@ namespace LogViewer
                     line.Foreground = new SolidColorBrush(Colors.Gray);
                     break;
             }
-            RichTextBoxLogs.Document.Blocks.Add(new Paragraph(line));
+            AppendContent(new Paragraph(line) { Tag = line });
 
             if (_logViewModel.IsAutoScrollToEnd)
                 RichTextBoxLogs.ScrollToEnd();
+        }
+
+        private void AppendContent(Paragraph paragraph)
+        {
+            if (RichTextBoxLogs.Document.Blocks.Count >= MaxLinePrePage)
+            {
+                var first = RichTextBoxLogs.Document.Blocks.ElementAtOrDefault(0);
+                if (first != null)
+                    RichTextBoxLogs.Document.Blocks.Remove(first);
+            }
+            RichTextBoxLogs.Document.Blocks.Add(paragraph);
         }
 
         private void CleanLogs_OnClick(object sender, RoutedEventArgs e)
@@ -241,10 +254,10 @@ namespace LogViewer
                 DragMove();
         }
 
-        private HwndSource _HwndSource;
+        private HwndSource _hwndSource;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         private void ResizePressed(object sender, MouseEventArgs e)
         {
@@ -254,7 +267,7 @@ namespace LogViewer
 
         private void ResizeWindow()
         {
-            SendMessage(_HwndSource.Handle, 0x112, (IntPtr)(61440 + 8), IntPtr.Zero);
+            SendMessage(_hwndSource.Handle, 0x112, (IntPtr)(61440 + 8), IntPtr.Zero);
         }
 
         private void ShutDown_OnClick(object sender, RoutedEventArgs e)
@@ -312,7 +325,7 @@ namespace LogViewer
         }
 
         readonly List<TextRange> _findResult = new List<TextRange>();
-        private int _currentIndex = 0;
+        private int _currentIndex;
         private void TextBoxKeyWords_OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)

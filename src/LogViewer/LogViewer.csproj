@@ -62,6 +62,8 @@
     <Compile Include="CopyContent.xaml.cs">
       <DependentUpon>CopyContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HighLightImageButton.cs" />
+    <Compile Include="ImageCheckBox.cs" />
     <Compile Include="LogEntity.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="UdpServer.cs" />
@@ -86,6 +88,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\Annotations.cs" />

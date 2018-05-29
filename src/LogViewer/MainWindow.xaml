@@ -3,9 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" UseLayoutRounding="True"  BorderThickness="24" WindowStartupLocation="CenterScreen" KeyDown="Find_OnKeyDown" Loaded="MainWindow_OnLoaded">
+        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" 
+        UseLayoutRounding="True"  
+        BorderThickness="24" 
+        WindowStartupLocation="CenterScreen" 
+        KeyDown="Find_OnKeyDown" 
+        Loaded="MainWindow_OnLoaded">
     <Window.Resources>
         <Style TargetType="Border" x:Key="BorderStyle">
             <Setter Property="BorderThickness" Value="0"></Setter>
@@ -33,254 +39,125 @@
                 <ComboBox ItemsSource="{Binding Loggers}" SelectedItem="{Binding CurrentLogger}"  MaxWidth="100"></ComboBox>
                 <Label>日志级别：</Label>
                 <ComboBox ItemsSource="{Binding LoggerLevels}" SelectedItem="{Binding CurrentLevel}"  MaxWidth="100"></ComboBox>
-                <Button ToolTip="清除所有日志" Margin="10 0 2 0" Click="CleanLogs_OnClick">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Style="{StaticResource BorderStyle}">
-                                <Image Source="Images/clean.png"></Image>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                <CheckBox IsChecked="{Binding IsAutoScrollToEnd}" Margin="2 0">
-                    <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Border Style="{StaticResource BorderStyle}">
-                                            <Image Source="Images/down.png" ToolTip="禁止自动滚动"></Image>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <Border Style="{StaticResource BorderStyle}">
-                                                    <Image Source="Images/Removefixed.png" Width="20" ToolTip="启动自动滚动"></Image>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <CheckBox IsChecked="{Binding Topmost, ElementName=MainWindowForm}" Margin="2 0">
-                    <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Border Style="{StaticResource BorderStyle}">
-                                            <Image Source="Images/topmost.png" Width="20" ToolTip="还原"></Image>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <Border Style="{StaticResource BorderStyle}">
-                                                    <Image Source="Images/normal.png" Width="20"  ToolTip="置顶"></Image>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <Button ToolTip="复制配置文件" Margin="2 0" Click="CopySetting_OnClick">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Style="{StaticResource BorderStyle}">
-                                <Image Source="Images/copy.png"></Image>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+
+                <local:HighLightImageButton 
+                    HorizontalAlignment="Right" 
+                    Margin="10 0 2 0"
+                    ToolTip="清除所有日志"
+                    Click="CleanLogs_OnClick"
+                    ImageSource="Images/clean.png"
+                    HighlightImage="Images/clean.png"
+                    ImageWidth="20"
+                    BorderStyle="{StaticResource BorderStyle}" 
+                    HighlightBrush="LightSkyBlue"/>
+
+                <local:ImageCheckBox
+                    IsChecked="{Binding IsAutoScrollToEnd}" 
+                    Margin="2 0"
+                    BorderStyle="{StaticResource BorderStyle}"
+                    CheckedImage="Images/down.png"
+                    CheckedToolTip="禁止自动滚动"
+                    ImageWidth="20"
+                    UnCheckedImage="Images/Removefixed.png"
+                    UnCheckedToolTip="启动自动滚动"/>
+                
+                <local:ImageCheckBox
+                    IsChecked="{Binding Topmost, ElementName=MainWindowForm}" 
+                    Margin="2 0"
+                    BorderStyle="{StaticResource BorderStyle}"
+                    CheckedImage="Images/topmost.png"
+                    CheckedToolTip="还原"
+                    ImageWidth="20"
+                    UnCheckedImage="Images/normal.png"
+                    UnCheckedToolTip="置顶"/>
+
+                <local:HighLightImageButton
+                    Margin="2 0"
+                    ToolTip="复制配置文件"
+                    Click="CopySetting_OnClick"
+                    ImageSource="Images/copy.png"
+                    HighlightImage="Images/copy.png"
+                    ImageWidth="20"
+                    BorderStyle="{StaticResource BorderStyle}" 
+                    HighlightBrush="LightSkyBlue"/>
+                
                 <Label>服务端口：</Label>
                 <TextBox Text="{Binding Port}" Width="50" IsEnabled="{Binding CanChangePort}" VerticalContentAlignment="Center" Margin="0 2"></TextBox>
-                <CheckBox IsChecked="{Binding IsWorking}" Margin="2 0" Click="StartOrStop_OnClick">
-                    <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Border Style="{StaticResource BorderStyle}">
-                                            <Image Source="Images/stop.png" ToolTip="停止服务"></Image>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <Border Style="{StaticResource BorderStyle}">
-                                                    <Image Source="Images/startUp.png" ToolTip="启动服务"></Image>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
+
+                <local:ImageCheckBox
+                    IsChecked="{Binding IsWorking}" 
+                    Margin="2 0" 
+                    Click="StartOrStop_OnClick"
+                    BorderStyle="{StaticResource BorderStyle}"
+                    CheckedImage="Images/stop.png"
+                    CheckedToolTip="停止服务"
+                    ImageWidth="20"
+                    UnCheckedImage="Images/startUp.png"
+                    UnCheckedToolTip="启动服务"/>
             </StackPanel>
-            <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 42 0" ToolTip="最小化" Click="ButtonMin_OnClick">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Style="{StaticResource BorderStyle}">
-                                        <Image Source="Images/minus.png"></Image>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                <Image Source="Images/minus.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
 
-            <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 62 0" ToolTip="关于" Click="About_OnClick">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Style="{StaticResource BorderStyle}">
-                                        <Image Source="Images/about.png"></Image>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                <Image Source="Images/about.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-            <Button Grid.Row="0" Width="20" Height="20" Name="ButtonRestore" HorizontalAlignment="Right" Visibility="Collapsed" Margin="0 0 22 0"  ToolTip="还原" Click="ButtonRestore_OnClick">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Style="{StaticResource BorderStyle}">
-                                        <Image Source="Images/restore.png"></Image>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                <Image Source="Images/restore.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-            <Button Grid.Row="0" Width="20" Height="20" Name="ButtonMax" HorizontalAlignment="Right" Margin="0 0 22 0" Click="ButtonMax_OnClick" ToolTip="最大化">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Style="{StaticResource BorderStyle}">
-                                        <Image Source="Images/max.png"></Image>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                <Image Source="Images/max.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+            <local:HighLightImageButton 
+                Grid.Row="0" 
+                HorizontalAlignment="Right"
+                Margin="0 0 42 0" 
+                ToolTip="最小化" 
+                ImageWidth="20"
+                Click="ButtonMin_OnClick"
+                ImageSource="Images/minus.png"
+                HighlightImage="Images/minus.png"
+                BorderStyle="{StaticResource BorderStyle}" 
+                HighlightBrush="LightSkyBlue"/>
 
-            <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 2 0" Click="ShutDown_OnClick" ToolTip="关闭">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Style="{StaticResource BorderStyle}">
-                                        <Image Source="Images/close.png"></Image>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}">
-                                                <Image Source="Images/close-on.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+            <local:HighLightImageButton 
+                Grid.Row="0" 
+                ImageWidth="20"
+                HorizontalAlignment="Right" 
+                Margin="0 0 62 0"
+                ToolTip="关于"
+                Click="About_OnClick"
+                ImageSource="Images/about.png"
+                HighlightImage="Images/about.png"
+                BorderStyle="{StaticResource BorderStyle}" 
+                HighlightBrush="LightSkyBlue"></local:HighLightImageButton>
 
+            <local:HighLightImageButton 
+                Grid.Row="0" 
+                ImageWidth="20"
+                x:Name="ButtonRestore" 
+                HorizontalAlignment="Right" 
+                Visibility="Collapsed" 
+                Margin="0 0 22 0"  
+                ToolTip="还原" 
+                Click="ButtonRestore_OnClick"
+                ImageSource="Images/restore.png"
+                HighlightImage="Images/restore.png"
+                BorderStyle="{StaticResource BorderStyle}" 
+                HighlightBrush="LightSkyBlue"></local:HighLightImageButton>
+
+            <local:HighLightImageButton 
+                ImageSource="Images/max.png" 
+                HighlightImage="Images/max.png"
+                BorderStyle="{StaticResource BorderStyle}" 
+                HighlightBrush="LightSkyBlue"
+                Grid.Row="0" 
+                ImageWidth="20"
+                x:Name="ButtonMax" 
+                Click="ButtonMax_OnClick"
+                HorizontalAlignment="Right"
+                Margin="0 0 22 0"
+                ToolTip="最大化"></local:HighLightImageButton>
+
+            <local:HighLightImageButton
+                Grid.Row="0" 
+                ImageWidth="20"
+                HorizontalAlignment="Right" 
+                Margin="0 0 2 0" 
+                Click="ShutDown_OnClick" 
+                ToolTip="关闭"
+                BorderStyle="{StaticResource BorderStyle}"
+                ImageSource="Images/close.png"
+                HighlightImage="Images/close-on.png"
+                />
 
             <RichTextBox Name="RichTextBoxLogs" FontSize="12" Grid.Row="1" Margin="2 0 2 0" BorderThickness="1" BorderBrush="DodgerBlue" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
                 <FlowDocument>
@@ -293,138 +170,82 @@
                 </FlowDocument>
             </RichTextBox>
             <StackPanel Grid.Row="2" Orientation="Horizontal" Background="White" Margin="2">
-                <Label Foreground="Red" Background="Black" Content="{Binding Fatal}" ContentStringFormat="FATAL:{0}"></Label>
-                <Label Foreground="Red" Content="{Binding Error}" ContentStringFormat="ERROR:{0}"></Label>
-                <Label Foreground="Orange" Content="{Binding Warn}" ContentStringFormat="WARN:{0}"></Label>
-                <Label Foreground="DodgerBlue" Content="{Binding Info}" ContentStringFormat="INFO:{0}"></Label>
-                <Label Foreground="Gray" Content="{Binding Debug}" ContentStringFormat="DEBUG:{0}"></Label>
-                <Label Content="{Binding Total}" ContentStringFormat="TOTAL:{0}"></Label>
-                <Label>窗体透明度：</Label>
-                <Slider Style="{DynamicResource SliderStyle1}" Minimum="0.2" Maximum="1" VerticalAlignment="Center" Value="{Binding Opacity ,ElementName=MainWindowForm}" Width="150"></Slider>
-                <Label>字体大小：</Label>
-                <Slider Style="{DynamicResource SliderStyle1}" Minimum="12" Maximum="20"  VerticalAlignment="Center" Value="{Binding FontSize ,ElementName=RichTextBoxLogs}" Width="150"></Slider>
+                <Label Foreground="Red" Background="Black" Content="{Binding Fatal}" ContentStringFormat="FATAL:{0}"/>
+                <Label Foreground="Red" Content="{Binding Error}" ContentStringFormat="ERROR:{0}"/>
+                <Label Foreground="Orange" Content="{Binding Warn}" ContentStringFormat="WARN:{0}"/>
+                <Label Foreground="DodgerBlue" Content="{Binding Info}" ContentStringFormat="INFO:{0}"/>
+                <Label Foreground="Gray" Content="{Binding Debug}" ContentStringFormat="DEBUG:{0}"/>
+                <Label Content="{Binding Total}" ContentStringFormat="TOTAL:{0}"/>
+                <Label>透明度：</Label>
+                <Slider Style="{DynamicResource SliderStyle1}" 
+                        Minimum="0.2" 
+                        Maximum="1" 
+                        VerticalAlignment="Center" 
+                        Value="{Binding Opacity ,ElementName=MainWindowForm}" 
+                        Width="100"/>
+                <Label>字体：</Label>
+                <Slider Style="{DynamicResource SliderStyle1}" 
+                        Minimum="12" 
+                        Maximum="20"  
+                        VerticalAlignment="Center" 
+                        Value="{Binding FontSize ,ElementName=RichTextBoxLogs}"
+                        Width="100"/>
             </StackPanel>
             <Image Grid.Row="2" Source="Images/resize-bottom-right.png" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" 
                    MouseMove="ResizePressed" MouseDown="ResizePressed"></Image>
-            <Border Grid.Row="0" Grid.RowSpan="3" Visibility="Collapsed" Margin="0 0 5 5" Name="BorderFindBox"  BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Right" Background="White" VerticalAlignment="Bottom" >
+            <Border Grid.Row="0" 
+                    Grid.RowSpan="3" 
+                    Margin="0 0 5 5" 
+                    Name="BorderFindBox" 
+                    BorderBrush="DarkGray" 
+                    BorderThickness="1" 
+                    Visibility="Collapsed" 
+                    HorizontalAlignment="Right"
+                    Background="White"
+                    VerticalAlignment="Bottom" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="5"></DropShadowEffect>
                 </Border.Effect>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Width="200" Name="TextBoxKeyWords" KeyDown="TextBoxKeyWords_OnKeyDown" HorizontalAlignment="Stretch"  VerticalContentAlignment="Center" BorderThickness="0"></TextBox>
+                    <TextBox Width="200" 
+                             Name="TextBoxKeyWords" 
+                             KeyDown="TextBoxKeyWords_OnKeyDown" 
+                             HorizontalAlignment="Stretch"  
+                             VerticalContentAlignment="Center"
+                             BorderThickness="0"/>
                     <Label Name="LabelResultCount" MinWidth="60"></Label>
-                    <Button Click="DoSearch_OnClick" Width="24">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}">
-                                                <Image Width="16" Source="Images/search.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                        <Image Width="16" Source="Images/search.png"></Image>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    <Button Click="FindPre_OnClick">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}">
-                                                <Image Width="24" Source="Images/find-pre.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                        <Image Width="24" Source="Images/find-pre.png"></Image>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    <Button Click="FindNext_OnClick">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}">
-                                                <Image Width="24" Source="Images/find-next.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                        <Image Width="24" Source="Images/find-next.png"></Image>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    <Button Click="FindClose_OnClick">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Border Style="{StaticResource BorderStyle}">
-                                                <Image Width="24" Source="Images/find-close.png"></Image>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Border Style="{StaticResource BorderStyle}" Background="LightSkyBlue">
-                                                        <Image Width="24" Source="Images/find-close.png"></Image>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                    <local:HighLightImageButton 
+                        Width="20"
+                        Click="DoSearch_OnClick"
+                        BorderStyle="{StaticResource BorderStyle}"
+                        ImageSource="Images/search.png"
+                        HighlightImage="Images/search.png"
+                        HighlightBrush="LightSkyBlue"
+                        ImageWidth="16"/>
+                    <local:HighLightImageButton 
+                        Click="FindPre_OnClick"
+                        BorderStyle="{StaticResource BorderStyle}"
+                        ImageSource="Images/find-pre.png"
+                        HighlightImage="Images/find-pre.png"
+                        HighlightBrush="LightSkyBlue"
+                        ImageWidth="24"
+                        Width="30"/>
+                    <local:HighLightImageButton 
+                        Click="FindNext_OnClick"
+                        BorderStyle="{StaticResource BorderStyle}"
+                        ImageSource="Images/find-next.png"
+                        HighlightImage="Images/find-next.png"
+                        HighlightBrush="LightSkyBlue"
+                        ImageWidth="24"
+                        Width="30"/>
+                    <local:HighLightImageButton 
+                        Click="FindClose_OnClick"
+                        BorderStyle="{StaticResource BorderStyle}"
+                        ImageSource="Images/find-close.png"
+                        HighlightImage="Images/find-close.png"
+                        HighlightBrush="LightSkyBlue"
+                        ImageWidth="24"
+                        Width="24"/>
                 </StackPanel>
             </Border>
         </Grid>
