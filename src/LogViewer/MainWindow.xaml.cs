@@ -476,5 +476,24 @@ namespace LogViewer
                 RichTextBoxLogs.Document.Blocks.Add(GetParagraphForLog(log));
             }
         }
+
+        private int _lastClickTitleBarAt;
+
+        private void TitleBar_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var current = Environment.TickCount;
+            if (current - _lastClickTitleBarAt <= 500)
+            {
+                if (WindowState == WindowState.Normal)
+                {
+                    ButtonMax_OnClick(null, null);
+                }
+                else
+                {
+                    ButtonRestore_OnClick(null, null);
+                }
+            }
+            _lastClickTitleBarAt = current;
+        }
     }
 }

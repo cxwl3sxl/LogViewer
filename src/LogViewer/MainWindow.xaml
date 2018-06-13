@@ -29,7 +29,7 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="2" HorizontalAlignment="Stretch" Background="White">
+            <StackPanel Orientation="Horizontal" Margin="2" HorizontalAlignment="Stretch" Background="White" MouseLeftButtonDown="TitleBar_OnMouseLeftButtonDown">
                 <Image Source="daffy_duck_angry.ico"  Width="20" Height="20" Margin="0 0 5 0"></Image>
                 <Label>程序名称：</Label>
                 <ComboBox ItemsSource="{Binding ApplicationNames}" SelectedItem="{Binding CurrentApp}" MaxWidth="100"></ComboBox>
