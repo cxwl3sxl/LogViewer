@@ -158,7 +158,7 @@ namespace LogViewer
                     line.Foreground = new SolidColorBrush(Colors.Red);
                     break;
                 case "WARN":
-                    line.Foreground = new SolidColorBrush(Colors.Orange);
+                    line.Foreground = new SolidColorBrush(Color.FromRgb(0xff, 0x5c, 0x00));
                     break;
                 case "INFO":
                     line.Foreground = new SolidColorBrush(Colors.DodgerBlue);

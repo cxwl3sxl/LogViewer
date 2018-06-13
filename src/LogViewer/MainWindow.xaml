@@ -170,7 +170,7 @@
             <StackPanel Grid.Row="2" Orientation="Horizontal" Background="White" Margin="2">
                 <Label Foreground="Red" Background="Black" Content="{Binding Fatal}" ContentStringFormat="FATAL:{0}"/>
                 <Label Foreground="Red" Content="{Binding Error}" ContentStringFormat="ERROR:{0}"/>
-                <Label Foreground="Orange" Content="{Binding Warn}" ContentStringFormat="WARN:{0}"/>
+                <Label Foreground="#FF5C00" Content="{Binding Warn}" ContentStringFormat="WARN:{0}"/>
                 <Label Foreground="DodgerBlue" Content="{Binding Info}" ContentStringFormat="INFO:{0}"/>
                 <Label Foreground="Gray" Content="{Binding Debug}" ContentStringFormat="DEBUG:{0}"/>
                 <Label Content="{Binding Total}" ContentStringFormat="TOTAL:{0}"/>
