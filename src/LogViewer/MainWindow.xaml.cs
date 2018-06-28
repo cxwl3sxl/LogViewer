@@ -186,7 +186,11 @@ namespace LogViewer
                     line.Foreground = new SolidColorBrush(Colors.Gray);
                     break;
             }
-            return new Paragraph(line);
+            if (!DateTime.TryParse(log.Time.Replace(",", "."), out var logAt))
+            {
+                logAt = DateTime.Now;
+            }
+            return new Paragraph(line) { Tag = logAt };
         }
 
         private void AppendContent(Paragraph paragraph)
@@ -197,6 +201,36 @@ namespace LogViewer
                 if (first != null)
                     RichTextBoxLogs.Document.Blocks.Remove(first);
             }
+            var last = RichTextBoxLogs.Document.Blocks.LastOrDefault();
+            if (!(last?.Tag is DateTime lastLogAt))
+            {
+                RichTextBoxLogs.Document.Blocks.Add(paragraph);
+                return;
+            }
+
+            if (!(paragraph.Tag is DateTime nowLogAt))
+            {
+                RichTextBoxLogs.Document.Blocks.Add(paragraph);
+                return;
+            }
+
+            if (nowLogAt > lastLogAt)
+            {
+                RichTextBoxLogs.Document.Blocks.Add(paragraph);
+                return;
+            }
+
+            var start = RichTextBoxLogs.Document.Blocks.Count - 1;
+            for (var i = start; i >= 0; i--)
+            {
+                var current = RichTextBoxLogs.Document.Blocks.ElementAt(i) as Paragraph;
+                if (current?.Tag is DateTime now && now <= nowLogAt)
+                {
+                    RichTextBoxLogs.Document.Blocks.InsertAfter(current, paragraph);
+                    return;
+                }
+            }
+
             RichTextBoxLogs.Document.Blocks.Add(paragraph);
         }
 
