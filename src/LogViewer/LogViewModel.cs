@@ -7,12 +7,21 @@ namespace LogViewer
 {
     public class LogViewModel : INotifyPropertyChanged
     {
-        public const string All = "=ALL=";
+        public const string All = "ALL";
+        public readonly ThreadInfo _allThreadInfo;
+        public readonly LogNameInfo _allLogName;
         public LogViewModel()
         {
             ApplicationNames = new ObservableCollection<string> { All };
-            ThreadIds = new ObservableCollection<string> { All };
-            Loggers = new ObservableCollection<string>();
+            _allThreadInfo = new ThreadInfo()
+            {
+                IsChecked = true,
+                ThreadId = All,
+                AppName = All
+            };
+            _allThreadInfo.PropertyChanged += AllThreadInfo_PropertyChanged;
+            ThreadIds = new ObservableCollection<ThreadInfo> { _allThreadInfo };
+            Loggers = new ObservableCollection<LogNameInfo>();
             LoggerLevels = new ObservableCollection<string>
             {
                 All,
@@ -22,15 +31,43 @@ namespace LogViewer
                 "INFO",
                 "DEBUG"
             };
-            Loggers.Add(All);
+            _allLogName = new LogNameInfo()
+            {
+                IsChecked = true,
+                Name = All,
+                AppName = All
+            };
+            _allLogName.PropertyChanged += AllLogName_PropertyChanged;
+            Loggers.Add(_allLogName);
             CurrentApp = All;
-            CurrentLogger = All;
-            CurrentThread = All;
+            CurrentLogger = _allLogName;
+            CurrentThread = _allThreadInfo;
             CurrentLevel = All;
         }
+
+        private void AllLogName_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!(sender is LogNameInfo all)) return;
+            if (e.PropertyName != nameof(LogNameInfo.IsChecked)) return;
+            foreach (var logger in Loggers)
+            {
+                logger.IsChecked = all.IsChecked;
+            }
+        }
+
+        private void AllThreadInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!(sender is ThreadInfo all)) return;
+            if (e.PropertyName != nameof(ThreadInfo.IsChecked)) return;
+            foreach (var threadInfo in ThreadIds)
+            {
+                threadInfo.IsChecked = all.IsChecked;
+            }
+        }
+
         public ObservableCollection<string> ApplicationNames { get; }
-        public ObservableCollection<string> ThreadIds { get; }
-        public ObservableCollection<string> Loggers { get; }
+        public ObservableCollection<ThreadInfo> ThreadIds { get; }
+        public ObservableCollection<LogNameInfo> Loggers { get; }
         public ObservableCollection<string> LoggerLevels { get; }
 
         public event Action FilterChanged;
@@ -46,7 +83,7 @@ namespace LogViewer
             }
         }
 
-        public string CurrentThread
+        public ThreadInfo CurrentThread
         {
             get => _currentThread;
             set
@@ -57,7 +94,7 @@ namespace LogViewer
             }
         }
 
-        public string CurrentLogger
+        public LogNameInfo CurrentLogger
         {
             get => _currentLogger;
             set
@@ -104,8 +141,8 @@ namespace LogViewer
 
         private int _port = 7171;
         private string _currentApp;
-        private string _currentThread;
-        private string _currentLogger;
+        private ThreadInfo _currentThread;
+        private LogNameInfo _currentLogger;
         private string _currentLevel;
         private int _fatal;
         private int _error;
@@ -190,9 +227,54 @@ namespace LogViewer
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged(string propertyName)
+        void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public class LogCategoryInfo : INotifyPropertyChanged
+    {
+        private string _appName;
+        private bool _isChecked;
+
+        public string AppName
+        {
+            get => _appName;
+            set
+            {
+                var old = _appName;
+                _appName = value;
+                if (_appName != old) OnPropertyChanged(nameof(AppName));
+            }
+        }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                var old = _isChecked;
+                _isChecked = value;
+                if (_isChecked != old) OnPropertyChanged(nameof(IsChecked));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class ThreadInfo : LogCategoryInfo
+    {
+        public string ThreadId { get; set; }
+    }
+
+    public class LogNameInfo : LogCategoryInfo
+    {
+        public string Name { get; set; }
     }
 }

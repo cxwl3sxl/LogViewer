@@ -34,9 +34,41 @@
                 <Label>程序名称：</Label>
                 <ComboBox ItemsSource="{Binding ApplicationNames}" SelectedItem="{Binding CurrentApp}" MaxWidth="100"></ComboBox>
                 <Label>线程ID：</Label>
-                <ComboBox ItemsSource="{Binding ThreadIds}" SelectedItem="{Binding CurrentThread}"  MaxWidth="100"></ComboBox>
+                <ComboBox ItemsSource="{Binding ThreadIds}" SelectedItem="{Binding CurrentThread}"  MaxWidth="100">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                                <TextBlock VerticalAlignment="Center" Margin="2 0">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}-{1}">
+                                            <Binding Path="AppName"></Binding>
+                                            <Binding Path="ThreadId"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <Label>日志名称：</Label>
-                <ComboBox ItemsSource="{Binding Loggers}" SelectedItem="{Binding CurrentLogger}"  MaxWidth="100"></ComboBox>
+                <ComboBox ItemsSource="{Binding Loggers}" SelectedItem="{Binding CurrentLogger}"  MaxWidth="100">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                                <TextBlock VerticalAlignment="Center" Margin="2 0">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}-{1}">
+                                            <Binding Path="AppName"></Binding>
+                                            <Binding Path="Name"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <Label>日志级别：</Label>
                 <ComboBox ItemsSource="{Binding LoggerLevels}" SelectedItem="{Binding CurrentLevel}"  MaxWidth="100"></ComboBox>
 

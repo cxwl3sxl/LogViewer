@@ -37,13 +37,25 @@ namespace LogViewer
             _udpServer.ServerStoped += _udpServer_ServerStoped;
         }
 
+        bool CanShowThisLog(LogEntity logEntity)
+        {
+            if (_logViewModel.CurrentApp == LogViewModel.All &&
+                _logViewModel.CurrentLevel == LogViewModel.All &&
+                _logViewModel._allLogName.IsChecked &&
+                _logViewModel._allThreadInfo.IsChecked) return true; //所有选项都选择的全部
+
+            var threadChecked = _logViewModel.ThreadIds.Any(t => t.IsChecked && t.ThreadId == logEntity.Thread);
+            var logNameChecked = _logViewModel.Loggers.Any(n => n.IsChecked && n.Name == logEntity.Logger);
+            return threadChecked
+                   && logNameChecked
+                   && (_logViewModel.CurrentApp == LogViewModel.All || logEntity.App == _logViewModel.CurrentApp)
+                   && (_logViewModel.CurrentLevel == LogViewModel.All || logEntity.Level == _logViewModel.CurrentLevel);
+            //当前日志对象的线程ID、日志名称都被选中并且app和level被选中或全部
+        }
+
         private void _logViewModel_FilterChanged()
         {
-            var result = _allLogs.Where(d =>
-                (d.App == _logViewModel.CurrentApp || _logViewModel.CurrentApp == LogViewModel.All) &&
-                (d.Level == _logViewModel.CurrentLevel || _logViewModel.CurrentLevel == LogViewModel.All) &&
-                (d.Logger == _logViewModel.CurrentLogger || _logViewModel.CurrentLogger == LogViewModel.All) &&
-                (d.Thread == _logViewModel.CurrentThread || _logViewModel.CurrentThread == LogViewModel.All));
+            var result = _allLogs.Where(CanShowThisLog);
             RichTextBoxLogs.Document.Blocks.Clear();
             foreach (var entity in result)
             {
@@ -102,13 +114,23 @@ namespace LogViewer
             {
                 _logViewModel.ApplicationNames.Add(log.App);
             }
-            if (!_logViewModel.ThreadIds.Contains(log.Thread))
+            if (_logViewModel.ThreadIds.All(t => t.ThreadId != log.Thread))
             {
-                _logViewModel.ThreadIds.Add(log.Thread);
+                _logViewModel.ThreadIds.Add(new ThreadInfo()
+                {
+                    AppName = log.App,
+                    IsChecked = _logViewModel._allThreadInfo.IsChecked,
+                    ThreadId = log.Thread
+                });
             }
-            if (!_logViewModel.Loggers.Contains(log.Logger))
+            if (_logViewModel.Loggers.All(n => n.Name != log.Logger))
             {
-                _logViewModel.Loggers.Add(log.Logger);
+                _logViewModel.Loggers.Add(new LogNameInfo()
+                {
+                    AppName = log.App,
+                    IsChecked = _logViewModel._allLogName.IsChecked,
+                    Name = log.Logger
+                });
             }
             _logViewModel.Total++;
             switch (log.Level)
@@ -129,10 +151,7 @@ namespace LogViewer
                     _logViewModel.Debug++;
                     break;
             }
-            if (_logViewModel.CurrentApp != LogViewModel.All && _logViewModel.CurrentApp != log.App) return;
-            if (_logViewModel.CurrentLogger != LogViewModel.All && _logViewModel.CurrentLogger != log.Logger) return;
-            if (_logViewModel.CurrentThread != LogViewModel.All && _logViewModel.CurrentThread != log.Thread) return;
-            if (_logViewModel.CurrentLevel != LogViewModel.All && _logViewModel.CurrentLevel != log.Level) return;
+            if (!CanShowThisLog(log)) return;
 
             if (_lastLogId != 0 && log.LogId > _lastLogId) return;
             ShowLogItem(log);
@@ -147,7 +166,7 @@ namespace LogViewer
 
         Paragraph GetParagraphForLog(LogEntity log)
         {
-            var line = new Run($"[{log.Time}] [{log.Logger}] [{log.Thread}] {log.Content}");
+            var line = new Run($"[{log.Time}] [{log.App}] [{log.Logger}] [{log.Thread}] {log.Content}");
             switch (log.Level)
             {
                 case "FATAL":
