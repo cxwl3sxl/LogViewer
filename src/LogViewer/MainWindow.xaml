@@ -38,7 +38,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                                <CheckBox Margin="0 2 0 0" IsChecked="{Binding IsChecked}"></CheckBox>
                                 <TextBlock VerticalAlignment="Center" Margin="2 0">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}-{1}">
@@ -56,7 +56,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                                <CheckBox Margin="0 2 0 0" IsChecked="{Binding IsChecked}"></CheckBox>
                                 <TextBlock VerticalAlignment="Center" Margin="2 0">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}-{1}">
@@ -71,7 +71,7 @@
                 </ComboBox>
                 <Label>日志级别：</Label>
                 <ComboBox ItemsSource="{Binding LoggerLevels}" SelectedItem="{Binding CurrentLevel}"  MaxWidth="100"></ComboBox>
-
+                
                 <local:HighLightImageButton 
                     HorizontalAlignment="Right" 
                     Margin="10 0 2 0"

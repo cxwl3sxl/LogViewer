@@ -124,21 +124,39 @@ namespace LogViewer
             }
             if (_logViewModel.ThreadIds.All(t => t.ThreadId != log.Thread))
             {
-                _logViewModel.ThreadIds.Add(new ThreadInfo()
+                var needAdd = true;
+                var newThread = new ThreadInfo()
                 {
                     AppName = log.App,
                     IsChecked = _logViewModel.AllThreadInfo.IsChecked,
                     ThreadId = log.Thread
-                });
+                };
+                for (var i = 0; i < _logViewModel.ThreadIds.Count; i++)
+                {
+                    if (_logViewModel.ThreadIds[i].AppName != newThread.AppName) continue;
+                    _logViewModel.ThreadIds.Insert(i + 1, newThread);
+                    needAdd = false;
+                    break;
+                }
+                if (needAdd) _logViewModel.ThreadIds.Add(newThread);
             }
             if (_logViewModel.Loggers.All(n => n.Name != log.Logger))
             {
-                _logViewModel.Loggers.Add(new LogNameInfo()
+                var newLogger = new LogNameInfo()
                 {
                     AppName = log.App,
                     IsChecked = _logViewModel.AllLogName.IsChecked,
                     Name = log.Logger
-                });
+                };
+                var needAdd = true;
+                for (var i = 0; i < _logViewModel.Loggers.Count; i++)
+                {
+                    if (_logViewModel.Loggers[i].AppName != newLogger.AppName) continue;
+                    _logViewModel.Loggers.Insert(i + 1, newLogger);
+                    needAdd = false;
+                    break;
+                }
+                if (needAdd) _logViewModel.Loggers.Add(newLogger);
             }
             _logViewModel.Total++;
             switch (log.Level)
