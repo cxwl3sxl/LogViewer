@@ -8,19 +8,19 @@ namespace LogViewer
     public class LogViewModel : INotifyPropertyChanged
     {
         public const string All = "ALL";
-        public readonly ThreadInfo _allThreadInfo;
-        public readonly LogNameInfo _allLogName;
+        public readonly ThreadInfo AllThreadInfo;
+        public readonly LogNameInfo AllLogName;
         public LogViewModel()
         {
             ApplicationNames = new ObservableCollection<string> { All };
-            _allThreadInfo = new ThreadInfo()
+            AllThreadInfo = new ThreadInfo()
             {
                 IsChecked = true,
                 ThreadId = All,
                 AppName = All
             };
-            _allThreadInfo.PropertyChanged += AllThreadInfo_PropertyChanged;
-            ThreadIds = new ObservableCollection<ThreadInfo> { _allThreadInfo };
+            AllThreadInfo.PropertyChanged += AllThreadInfo_PropertyChanged;
+            ThreadIds = new ObservableCollection<ThreadInfo> { AllThreadInfo };
             Loggers = new ObservableCollection<LogNameInfo>();
             LoggerLevels = new ObservableCollection<string>
             {
@@ -31,17 +31,17 @@ namespace LogViewer
                 "INFO",
                 "DEBUG"
             };
-            _allLogName = new LogNameInfo()
+            AllLogName = new LogNameInfo()
             {
                 IsChecked = true,
                 Name = All,
                 AppName = All
             };
-            _allLogName.PropertyChanged += AllLogName_PropertyChanged;
-            Loggers.Add(_allLogName);
+            AllLogName.PropertyChanged += AllLogName_PropertyChanged;
+            Loggers.Add(AllLogName);
             CurrentApp = All;
-            CurrentLogger = _allLogName;
-            CurrentThread = _allThreadInfo;
+            CurrentLogger = AllLogName;
+            CurrentThread = AllThreadInfo;
             CurrentLevel = All;
         }
 

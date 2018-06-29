@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
 using System.Windows.Documents;
@@ -41,8 +42,8 @@ namespace LogViewer
         {
             if (_logViewModel.CurrentApp == LogViewModel.All &&
                 _logViewModel.CurrentLevel == LogViewModel.All &&
-                _logViewModel._allLogName.IsChecked &&
-                _logViewModel._allThreadInfo.IsChecked) return true; //所有选项都选择的全部
+                _logViewModel.AllLogName.IsChecked &&
+                _logViewModel.AllThreadInfo.IsChecked) return true; //所有选项都选择的全部
 
             var threadChecked = _logViewModel.ThreadIds.Any(t => t.IsChecked && t.ThreadId == logEntity.Thread);
             var logNameChecked = _logViewModel.Loggers.Any(n => n.IsChecked && n.Name == logEntity.Logger);
@@ -55,12 +56,16 @@ namespace LogViewer
 
         private void _logViewModel_FilterChanged()
         {
-            var result = _allLogs.Where(CanShowThisLog);
-            RichTextBoxLogs.Document.Blocks.Clear();
-            foreach (var entity in result)
+            Task.Factory.StartNew(() =>
             {
-                ShowLogItem(entity);
-            }
+                var tempLogs = _allLogs.ToArray();
+                var result = tempLogs.Where(CanShowThisLog);
+                foreach (var entity in result)
+                {
+                    Dispatcher.Invoke(new Action<LogEntity>(ShowLogItem), entity);
+                }
+            });
+            RichTextBoxLogs.Document.Blocks.Clear();
         }
 
         private void _udpServer_ServerStoped()
@@ -100,7 +105,10 @@ namespace LogViewer
 
         void ShowLog(string log)
         {
-            AppendContent(new Paragraph(new Run(log)));
+            AppendContent(new Paragraph(new Run(log))
+            {
+                Tag = DateTime.Now
+            });
             if (_logViewModel.IsAutoScrollToEnd)
                 RichTextBoxLogs.ScrollToEnd();
         }
@@ -119,7 +127,7 @@ namespace LogViewer
                 _logViewModel.ThreadIds.Add(new ThreadInfo()
                 {
                     AppName = log.App,
-                    IsChecked = _logViewModel._allThreadInfo.IsChecked,
+                    IsChecked = _logViewModel.AllThreadInfo.IsChecked,
                     ThreadId = log.Thread
                 });
             }
@@ -128,7 +136,7 @@ namespace LogViewer
                 _logViewModel.Loggers.Add(new LogNameInfo()
                 {
                     AppName = log.App,
-                    IsChecked = _logViewModel._allLogName.IsChecked,
+                    IsChecked = _logViewModel.AllLogName.IsChecked,
                     Name = log.Logger
                 });
             }
@@ -214,24 +222,19 @@ namespace LogViewer
                 return;
             }
 
-            if (nowLogAt > lastLogAt)
+            if (nowLogAt >= lastLogAt)
             {
                 RichTextBoxLogs.Document.Blocks.Add(paragraph);
                 return;
             }
 
-            var start = RichTextBoxLogs.Document.Blocks.Count - 1;
-            for (var i = start; i >= 0; i--)
+            var insertAfter = RichTextBoxLogs.Document.Blocks.FirstOrDefault(d => (DateTime)d.Tag <= nowLogAt);
+            if (insertAfter == null)
             {
-                var current = RichTextBoxLogs.Document.Blocks.ElementAt(i) as Paragraph;
-                if (current?.Tag is DateTime now && now <= nowLogAt)
-                {
-                    RichTextBoxLogs.Document.Blocks.InsertAfter(current, paragraph);
-                    return;
-                }
+                RichTextBoxLogs.Document.Blocks.Add(paragraph);
+                return;
             }
-
-            RichTextBoxLogs.Document.Blocks.Add(paragraph);
+            RichTextBoxLogs.Document.Blocks.InsertAfter(insertAfter, paragraph);
         }
 
         private void CleanLogs_OnClick(object sender, RoutedEventArgs e)
