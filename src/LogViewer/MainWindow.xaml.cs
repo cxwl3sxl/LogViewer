@@ -40,16 +40,17 @@ namespace LogViewer
 
         bool CanShowThisLog(LogEntity logEntity)
         {
-            if (_logViewModel.CurrentApp == LogViewModel.All &&
+            if (_logViewModel.AllAppInfo.IsChecked &&
                 _logViewModel.CurrentLevel == LogViewModel.All &&
                 _logViewModel.AllLogName.IsChecked &&
                 _logViewModel.AllThreadInfo.IsChecked) return true; //所有选项都选择的全部
 
             var threadChecked = _logViewModel.ThreadIds.Any(t => t.IsChecked && t.ThreadId == logEntity.Thread);
             var logNameChecked = _logViewModel.Loggers.Any(n => n.IsChecked && n.Name == logEntity.Logger);
+            var appChecked = _logViewModel.ApplicationNames.Any(a => a.IsChecked && a.AppName == logEntity.App);
             return threadChecked
                    && logNameChecked
-                   && (_logViewModel.CurrentApp == LogViewModel.All || logEntity.App == _logViewModel.CurrentApp)
+                   && appChecked
                    && (_logViewModel.CurrentLevel == LogViewModel.All || logEntity.Level == _logViewModel.CurrentLevel);
             //当前日志对象的线程ID、日志名称都被选中并且app和level被选中或全部
         }
@@ -118,9 +119,13 @@ namespace LogViewer
             if (log == null) return;
             _allLogs.Add(log);
 
-            if (!_logViewModel.ApplicationNames.Contains(log.App))
+            if (_logViewModel.ApplicationNames.All(app => app.AppName != log.App))
             {
-                _logViewModel.ApplicationNames.Add(log.App);
+                _logViewModel.ApplicationNames.Add(new AppInfo
+                {
+                    IsChecked = _logViewModel.AllAppInfo.IsChecked,
+                    AppName = log.App
+                });
             }
             if (_logViewModel.ThreadIds.All(t => t.ThreadId != log.Thread))
             {

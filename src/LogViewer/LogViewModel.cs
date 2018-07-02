@@ -10,9 +10,16 @@ namespace LogViewer
         public const string All = "ALL";
         public readonly ThreadInfo AllThreadInfo;
         public readonly LogNameInfo AllLogName;
+        public readonly AppInfo AllAppInfo;
         public LogViewModel()
         {
-            ApplicationNames = new ObservableCollection<string> { All };
+            AllAppInfo = new AppInfo()
+            {
+                IsChecked = true,
+                AppName = All
+            };
+            AllAppInfo.PropertyChanged += AllAppInfo_PropertyChanged;
+            ApplicationNames = new ObservableCollection<AppInfo> { AllAppInfo };
             AllThreadInfo = new ThreadInfo()
             {
                 IsChecked = true,
@@ -39,10 +46,20 @@ namespace LogViewer
             };
             AllLogName.PropertyChanged += AllLogName_PropertyChanged;
             Loggers.Add(AllLogName);
-            CurrentApp = All;
+            CurrentApp = AllAppInfo;
             CurrentLogger = AllLogName;
             CurrentThread = AllThreadInfo;
             CurrentLevel = All;
+        }
+
+        private void AllAppInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!(sender is AppInfo all)) return;
+            if (e.PropertyName != nameof(AppInfo.IsChecked)) return;
+            foreach (var app in ApplicationNames)
+            {
+                app.IsChecked = all.IsChecked;
+            }
         }
 
         private void AllLogName_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -65,14 +82,14 @@ namespace LogViewer
             }
         }
 
-        public ObservableCollection<string> ApplicationNames { get; }
+        public ObservableCollection<AppInfo> ApplicationNames { get; }
         public ObservableCollection<ThreadInfo> ThreadIds { get; }
         public ObservableCollection<LogNameInfo> Loggers { get; }
         public ObservableCollection<string> LoggerLevels { get; }
 
         public event Action FilterChanged;
 
-        public string CurrentApp
+        public AppInfo CurrentApp
         {
             get => _currentApp;
             set
@@ -140,7 +157,7 @@ namespace LogViewer
         }
 
         private int _port = 7171;
-        private string _currentApp;
+        private AppInfo _currentApp;
         private ThreadInfo _currentThread;
         private LogNameInfo _currentLogger;
         private string _currentLevel;
@@ -276,5 +293,10 @@ namespace LogViewer
     public class LogNameInfo : LogCategoryInfo
     {
         public string Name { get; set; }
+    }
+
+    public class AppInfo : LogCategoryInfo
+    {
+        public string AppName { get; set; }
     }
 }
