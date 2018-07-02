@@ -209,10 +209,10 @@
 
                 <Label Width="10"></Label>
 
-                <local:LinkButton Content="首页" Click="FirstPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
-                <local:LinkButton Content="上一页" Click="PrePageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
-                <local:LinkButton Content="下一页" Click="NextPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
-                <local:LinkButton Content="末页" Click="LastPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Visibility="Collapsed" Content="首页" Click="FirstPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Visibility="Collapsed" Content="上一页" Click="PrePageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Visibility="Collapsed" Content="下一页" Click="NextPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
+                <local:LinkButton Visibility="Collapsed" Content="末页" Click="LastPageLog_OnClick" Foreground="DarkGray" HighlightBrush="Blue"></local:LinkButton>
 
                 <Label>透明度：</Label>
                 <Slider Style="{DynamicResource SliderStyle1}" 
