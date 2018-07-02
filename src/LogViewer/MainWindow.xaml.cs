@@ -40,10 +40,10 @@ namespace LogViewer
 
         bool CanShowThisLog(LogEntity logEntity)
         {
-            if (_logViewModel.AllAppInfo.IsChecked &&
-                _logViewModel.CurrentLevel == LogViewModel.All &&
-                _logViewModel.AllLogName.IsChecked &&
-                _logViewModel.AllThreadInfo.IsChecked) return true; //所有选项都选择的全部
+            //if (_logViewModel.AllAppInfo.IsChecked &&
+            //    _logViewModel.CurrentLevel == LogViewModel.All &&
+            //    _logViewModel.AllLogName.IsChecked &&
+            //    _logViewModel.AllThreadInfo.IsChecked) return true; //所有选项都选择的全部
 
             var threadChecked = _logViewModel.ThreadIds.Any(t => t.IsChecked && t.ThreadId == logEntity.Thread);
             var logNameChecked = _logViewModel.Loggers.Any(n => n.IsChecked && n.Name == logEntity.Logger);
