@@ -27,8 +27,12 @@ namespace LogViewer
                 AppName = All
             };
             AllThreadInfo.PropertyChanged += AllThreadInfo_PropertyChanged;
-            ThreadIds = new ObservableCollection<ThreadInfo> { AllThreadInfo };
-            Loggers = new ObservableCollection<LogNameInfo>();
+            ThreadIds = new SortableObservableCollection<ThreadInfo> { AllThreadInfo };
+            ThreadIds.SortingSelector = a => $"{a.AppName}{a.ThreadId}";
+            ThreadIds.Descending = false;
+
+            Loggers = new SortableObservableCollection<LogNameInfo>();
+
             LoggerLevels = new ObservableCollection<string>
             {
                 All,
@@ -45,7 +49,11 @@ namespace LogViewer
                 AppName = All
             };
             AllLogName.PropertyChanged += AllLogName_PropertyChanged;
+
             Loggers.Add(AllLogName);
+            Loggers.SortingSelector = a => $"{a.AppName}{a.Name}";
+            Loggers.Descending = false;
+
             CurrentApp = AllAppInfo;
             CurrentLogger = AllLogName;
             CurrentThread = AllThreadInfo;
@@ -83,8 +91,8 @@ namespace LogViewer
         }
 
         public ObservableCollection<AppInfo> ApplicationNames { get; }
-        public ObservableCollection<ThreadInfo> ThreadIds { get; }
-        public ObservableCollection<LogNameInfo> Loggers { get; }
+        public SortableObservableCollection<ThreadInfo> ThreadIds { get; }
+        public SortableObservableCollection<LogNameInfo> Loggers { get; }
         public ObservableCollection<string> LoggerLevels { get; }
 
         public event Action FilterChanged;
