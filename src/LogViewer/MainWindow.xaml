@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LogViewer"
         mc:Ignorable="d"
         Name="MainWindowForm" AllowsTransparency="True" WindowStyle="None"
-        Title="Log4Net日志查看" Height="350" Width="1000" MinWidth="970" MinHeight="350" 
+        Title="Log4Net日志查看" Height="450" Width="1200" MinWidth="970" MinHeight="350" 
         UseLayoutRounding="True"  
         BorderThickness="24" 
         WindowStartupLocation="CenterScreen" 
