@@ -112,12 +112,14 @@ namespace LogViewer
                 {
                     if (thread.AppName == AllThreadInfo.AppName) continue;
                     thread.IsHide = checkedApp.FirstOrDefault(a => a.AppName == thread.AppName) == null;
+                    if (thread.IsHide) thread.IsChecked = false;
                 }
 
                 foreach (var logger in Loggers)
                 {
                     if (logger.AppName == AllLogName.AppName) continue;
                     logger.IsHide = checkedApp.FirstOrDefault(a => a.AppName == logger.AppName) == null;
+                    if (logger.IsHide) logger.IsChecked = false;
                 }
 
                 FilterChanged?.Invoke();
@@ -321,16 +323,31 @@ namespace LogViewer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public override string ToString()
+        {
+            return $"A:{AppName}-C:{(IsChecked ? "Y" : "N")}-H:{(IsHide ? "Y" : "N")}";
+        }
     }
 
     public class ThreadInfo : LogCategoryInfo
     {
         public string ThreadId { get; set; }
+
+        public override string ToString()
+        {
+            return $"T:{ThreadId}-{base.ToString()}";
+        }
     }
 
     public class LogNameInfo : LogCategoryInfo
     {
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return $"L:{Name}-{base.ToString()}";
+        }
     }
 
     public class AppInfo : LogCategoryInfo
