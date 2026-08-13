@@ -25,6 +25,21 @@
     </Window.Effect>
     <Border BorderThickness="1" BorderBrush="DodgerBlue"  MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown" >
         <Grid>
+            <Grid.Triggers>
+                <!-- 窗口加载时触发动画 -->
+                <EventTrigger RoutedEvent="Grid.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="ImageRotateTransform"
+                                Storyboard.TargetProperty="Angle"
+                                From="0" To="360"
+                                Duration="0:0:1"
+                                RepeatBehavior="Forever"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -34,6 +49,12 @@
                 <Image Source="daffy_duck_angry.ico"  Width="20" Height="20" Margin="0 0 5 0"></Image>
                 <Label>程序名称：</Label>
                 <ComboBox ItemsSource="{Binding ApplicationNames}" SelectedItem="{Binding CurrentApp}" MaxWidth="100">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Visibility" 
+                                    Value="{Binding IsHide, Converter={StaticResource HideOptionConverter}}" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -251,6 +272,13 @@
                         VerticalAlignment="Center" 
                         Value="{Binding FontSize ,ElementName=RichTextBoxLogs}"
                         Width="100"/>
+                <ComboBox Height="21" Width="80" VerticalContentAlignment="Center" ItemsSource="{Binding ComboBoxFilter}" SelectedValue="{Binding CurrentComboboxFilterValue}" Margin="5 0" VerticalAlignment="Center"></ComboBox>
+                <TextBox Height="21" Width="150" VerticalContentAlignment="Center" Text="{Binding CurrentFilterValue}" Margin="5 0" VerticalAlignment="Center"></TextBox>
+                <Image Height="20" Width="20" Source="Images/loading.png" RenderTransformOrigin="0.5,0.5" Visibility="{Binding HideFiltering, Converter={StaticResource HideOptionConverter}}">
+                    <Image.RenderTransform>
+                        <RotateTransform x:Name="ImageRotateTransform" Angle="0"/>
+                    </Image.RenderTransform>
+                </Image>
             </StackPanel>
             <Image Grid.Row="2" Source="Images/resize-bottom-right.png" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" 
                    MouseMove="ResizePressed" MouseDown="ResizePressed"></Image>

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using LogViewer.Annotations;
 
 namespace LogViewer
@@ -12,6 +14,22 @@ namespace LogViewer
         public readonly ThreadInfo AllThreadInfo;
         public readonly LogNameInfo AllLogName;
         public readonly AppInfo AllAppInfo;
+        private readonly Dictionary<string, string> _customiseFilterValueCache = new Dictionary<string, string>();
+
+        private int _port = 7171;
+        private AppInfo _currentApp;
+        private ThreadInfo _currentThread;
+        private LogNameInfo _currentLogger;
+        private string _currentLevel;
+        private string _currentComboboxFilterValue;
+        private string _currentFilterValue;
+        private int _fatal;
+        private int _error;
+        private int _warn;
+        private int _info;
+        private int _debug;
+        private int _total;
+        private bool _hideFiltering = true;
 
         public LogViewModel()
         {
@@ -34,6 +52,15 @@ namespace LogViewer
             ThreadIds.Descending = false;
 
             Loggers = new SortableObservableCollection<LogNameInfo>();
+
+            ComboBoxFilter = new ObservableCollection<string>
+            {
+                "App",
+                "Thread",
+                "Logger"
+            };
+
+            _currentComboboxFilterValue = "App";
 
             LoggerLevels = new ObservableCollection<string>
             {
@@ -96,6 +123,86 @@ namespace LogViewer
         public SortableObservableCollection<ThreadInfo> ThreadIds { get; }
         public SortableObservableCollection<LogNameInfo> Loggers { get; }
         public ObservableCollection<string> LoggerLevels { get; }
+        public ObservableCollection<string> ComboBoxFilter { get; }
+
+        public string CurrentComboboxFilterValue
+        {
+            get => _currentComboboxFilterValue;
+            set
+            {
+                if (value == _currentComboboxFilterValue) return;
+                //缓存切换前的Filter的值
+                if (_currentComboboxFilterValue != null)
+                {
+                    _customiseFilterValueCache[_currentComboboxFilterValue] = CurrentFilterValue;
+                }
+                
+
+                //应用Filter
+                _currentComboboxFilterValue = value;
+
+                //取回新的Filter的值缓存
+                CurrentFilterValue =
+                    _customiseFilterValueCache.TryGetValue(value, out var newFilterValCache)
+                        ? newFilterValCache
+                        : string.Empty;
+
+                OnPropertyChanged(nameof(CurrentComboboxFilterValue));
+            }
+        }
+
+        public bool HideFiltering
+        {
+            get => _hideFiltering;
+            set
+            {
+                if (value == _hideFiltering) return;
+                _hideFiltering = value;
+                OnPropertyChanged((nameof(HideFiltering)));
+            }
+        }
+
+        public string CurrentFilterValue
+        {
+            get => _currentFilterValue;
+            set
+            {
+                if (value == _currentFilterValue) return;
+                _currentFilterValue = value;
+                HideFiltering = false;
+                OnPropertyChanged(nameof(CurrentFilterValue));
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    switch (_currentComboboxFilterValue)
+                    {
+                        case "App":
+                            foreach (var appInfo in ApplicationNames.ToArray())
+                            {
+                                appInfo.Filter(_currentFilterValue);
+                            }
+
+                            break;
+                        case "Thread":
+                            foreach (var thread in ThreadIds.ToArray())
+                            {
+                                thread.Filter(_currentFilterValue);
+                            }
+
+                            break;
+                        case "Logger":
+                            foreach (var logger in Loggers.ToArray())
+                            {
+                                logger.Filter(_currentFilterValue);
+                            }
+
+                            break;
+                    }
+
+                    HideFiltering = true;
+                });
+            }
+        }
 
         public event Action FilterChanged;
 
@@ -183,18 +290,6 @@ namespace LogViewer
                 OnPropertyChanged(nameof(CanChangePort));
             }
         }
-
-        private int _port = 7171;
-        private AppInfo _currentApp;
-        private ThreadInfo _currentThread;
-        private LogNameInfo _currentLogger;
-        private string _currentLevel;
-        private int _fatal;
-        private int _error;
-        private int _warn;
-        private int _info;
-        private int _debug;
-        private int _total;
 
         public int Total
         {
@@ -328,6 +423,22 @@ namespace LogViewer
         {
             return $"A:{AppName}-C:{(IsChecked ? "Y" : "N")}-H:{(IsHide ? "Y" : "N")}";
         }
+
+        public void Filter(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                IsHide = false;
+                return;
+            }
+
+            IsHide = !DoFilter(text);
+        }
+
+        protected virtual bool DoFilter(string text)
+        {
+            return AppName.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
     }
 
     public class ThreadInfo : LogCategoryInfo
@@ -338,6 +449,11 @@ namespace LogViewer
         {
             return $"T:{ThreadId}-{base.ToString()}";
         }
+
+        protected override bool DoFilter(string text)
+        {
+            return ThreadId.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 || base.DoFilter(text);
+        }
     }
 
     public class LogNameInfo : LogCategoryInfo
@@ -347,6 +463,11 @@ namespace LogViewer
         public override string ToString()
         {
             return $"L:{Name}-{base.ToString()}";
+        }
+
+        protected override bool DoFilter(string text)
+        {
+            return Name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 || base.DoFilter(text);
         }
     }
 
