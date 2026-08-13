@@ -65,6 +65,7 @@
     <Compile Include="CopyContent.xaml.cs">
       <DependentUpon>CopyContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HideOptionConverter.cs" />
     <Compile Include="HighLightImageButton.cs" />
     <Compile Include="ImageCheckBox.cs" />
     <Compile Include="LinkButton.cs" />

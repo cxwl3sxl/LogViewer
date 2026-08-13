@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using LogViewer.Annotations;
 
 namespace LogViewer
@@ -11,6 +12,7 @@ namespace LogViewer
         public readonly ThreadInfo AllThreadInfo;
         public readonly LogNameInfo AllLogName;
         public readonly AppInfo AllAppInfo;
+
         public LogViewModel()
         {
             AllAppInfo = new AppInfo()
@@ -104,7 +106,21 @@ namespace LogViewer
             {
                 var changed = _currentApp != value;
                 _currentApp = value;
-                if (changed) FilterChanged?.Invoke();
+                if (!changed) return;
+                var checkedApp = ApplicationNames.Where(a => a.IsChecked).ToArray();
+                foreach (var thread in ThreadIds)
+                {
+                    if (thread.AppName == AllThreadInfo.AppName) continue;
+                    thread.IsHide = checkedApp.FirstOrDefault(a => a.AppName == thread.AppName) == null;
+                }
+
+                foreach (var logger in Loggers)
+                {
+                    if (logger.AppName == AllLogName.AppName) continue;
+                    logger.IsHide = checkedApp.FirstOrDefault(a => a.AppName == logger.AppName) == null;
+                }
+
+                FilterChanged?.Invoke();
             }
         }
 
@@ -142,6 +158,7 @@ namespace LogViewer
         }
 
         private bool _isAutoScrollToEnd = true;
+
         public bool IsAutoScrollToEnd
         {
             get => _isAutoScrollToEnd;
@@ -153,6 +170,7 @@ namespace LogViewer
         }
 
         private bool _isWorking = false;
+
         public bool IsWorking
         {
             get => _isWorking;
@@ -262,15 +280,16 @@ namespace LogViewer
     {
         private string _appName;
         private bool _isChecked;
+        private bool _isHide;
 
         public string AppName
         {
             get => _appName;
             set
             {
-                var old = _appName;
+                if (value == _appName) return;
                 _appName = value;
-                if (_appName != old) OnPropertyChanged(nameof(AppName));
+                OnPropertyChanged(nameof(AppName));
             }
         }
 
@@ -279,9 +298,20 @@ namespace LogViewer
             get => _isChecked;
             set
             {
-                var old = _isChecked;
+                if (value == _isChecked) return;
                 _isChecked = value;
-                if (_isChecked != old) OnPropertyChanged(nameof(IsChecked));
+                OnPropertyChanged(nameof(IsChecked));
+            }
+        }
+
+        public bool IsHide
+        {
+            get => _isHide;
+            set
+            {
+                if (value == _isHide) return;
+                _isHide = value;
+                OnPropertyChanged(nameof(IsHide));
             }
         }
 
@@ -305,6 +335,6 @@ namespace LogViewer
 
     public class AppInfo : LogCategoryInfo
     {
-        public string AppName { get; set; }
+
     }
 }

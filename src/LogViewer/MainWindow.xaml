@@ -1,4 +1,4 @@
-﻿<Window x:Class="LogViewer.MainWindow"
+<Window x:Class="LogViewer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,6 +18,7 @@
             <Setter Property="BorderBrush" Value="#ddd"></Setter>
             <Setter Property="Padding" Value="2 1"></Setter>
         </Style>
+        <local:HideOptionConverter x:Key="HideOptionConverter"></local:HideOptionConverter>
     </Window.Resources>
     <Window.Effect>
         <DropShadowEffect BlurRadius="24" Color="#FF858484" ShadowDepth="0"/>
@@ -45,6 +46,12 @@
                 </ComboBox>
                 <Label>线程ID：</Label>
                 <ComboBox ItemsSource="{Binding ThreadIds}" SelectedItem="{Binding CurrentThread}"  MaxWidth="100">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Visibility" 
+                                    Value="{Binding IsHide, Converter={StaticResource HideOptionConverter}}" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -63,6 +70,12 @@
                 </ComboBox>
                 <Label>日志名称：</Label>
                 <ComboBox ItemsSource="{Binding Loggers}" SelectedItem="{Binding CurrentLogger}"  MaxWidth="100">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Visibility" 
+                                    Value="{Binding IsHide, Converter={StaticResource HideOptionConverter}}" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
